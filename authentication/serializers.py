@@ -2,15 +2,15 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .models import Profile
-from .models import Shift, BroyeurData, SecheurData, PortData, ExpeditionData
+from .models import Shift, Dryer_production, Mill_production, Equipement, ExpeditionData
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(write_only=True, required=False)
-    password = serializers.CharField(write_only=True, min_length=6)
+    phone_number = serializers.IntegerField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, min_length=6)  
     service_location = serializers.CharField(write_only=True, required=False)
     position = serializers.CharField(write_only=True, required=False)
-    employee_id = serializers.CharField(write_only=True, required=False)
+    employee_id = serializers.IntegerField(write_only=True, required=False)
     gender = serializers.CharField(write_only=True, required=False)
 
     class Meta:
@@ -28,7 +28,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         employee_id = validated_data.pop('employee_id', None)
         gender = validated_data.pop('gender', None)
 
-        user = User.bjects.create_user(
+        user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password']
@@ -36,7 +36,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
         Profile.objects.create(
-            user=user,
+            # user=user,
             phone_number=phone or '',
             service_location=service_location,
             position=position,
@@ -54,6 +54,7 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
     def validate(self, data):
+        print("called")
         user = authenticate(**data)
         if user and user.is_active:
             return user
@@ -67,22 +68,27 @@ class ShiftSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('created_by', 'created_at')
 
-class BroyeurDataSerializer(serializers.ModelSerializer):
+class Dryer_productionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BroyeurData
+        model = Dryer_production
         fields = '__all__'
 
-class SecheurDataSerializer(serializers.ModelSerializer):
+class Mill_productionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SecheurData
+        model = Mill_production
         fields = '__all__'
 
-class PortDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PortData
-        fields = '__all__'
+# class PortDataSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PortData
+#         fields = '__all__'
 
 class ExpeditionDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExpeditionData
+        fields = '__all__'
+
+class EquipementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipement
         fields = '__all__'
