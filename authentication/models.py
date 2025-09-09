@@ -4,10 +4,13 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings;'l[]'
 
 
+
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -18,22 +21,21 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
        Token.objects.get_or_create(user=user)    
 
 class Profile(models.Model):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
-        primary_key=True)
-    # user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone_number = models.IntegerField(max_length=20, blank=True)
-    Service_location = models.CharField(max_length=100, blank=True)
-    Position = models.CharField(max_length=100, blank=True)
-    Employee_id = models.IntegerField(max_length=10, unique=True)
-    Gender = models.CharField(max_length=10, blank=True)
-    email = models.EmailField(max_length=10, blank=True, unique=True)
-    password = models.CharField(max_length=20)
+    # user = models.OneToOneField( User,
+    #     # settings.AUTH_USER_MODEL, 
+    #     on_delete=models.CASCADE,
+    #     # primary_key=True, 
+    #     related_name='profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', primary_key=True)
+    phone_number = models.IntegerField(null=True)
+    service_location = models.TextField(max_length=100,null=True )
+    role = models.TextField(max_length=100,null=True )
+    employee_id = models.CharField(max_length=100,null=True )
+    gender = models.TextField(max_length=10,null=True)
 
-
-def __str__(self):
-        return f"{self.user.username}'s Profile"
+    
+    def __str__(self):
+        return f"{self.user.username}"
 
 # class User(AbstractUser):
 #         manager = models.ForeignKey(SomeModel, on_delete=models.CASCADE, related_name='managed_users', null=True, blank=True)
@@ -41,6 +43,12 @@ def __str__(self):
 #         role = models.CharField(max_length=50, blank=True, null=True)  # Example
     
 # Create your models here.
+
+# active_users = User.objects.filter(is_active=True)
+
+# for user in active_users:
+#     user.status = "active"  # Modify the object
+#     user.save()  # Save the changes to the database
 
 
 # models.py input data from ReportSide 
@@ -58,17 +66,17 @@ class Shift(models.Model):
     # Patroller = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
      # Operator fields
-    cro1 = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='cro1_shifts')
-    cro2 = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='cro2_shifts')
-    patroller1 = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='patroller1_shifts')
-    patroller2 = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='patroller2_shifts')
-    cdq = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='cdq_shifts')
+    CRO1 = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='cro1_shifts')
+    CRO2 = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='cro2_shifts')
+    Patroller1 = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='patroller1_shifts')
+    Patroller2 = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='patroller2_shifts')
+    CDQ = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='cdq_shifts')
     
     # Other personnel that may not be in Profile
-    app_elec = models.CharField(max_length=100)
-    app_meca = models.CharField(max_length=100)
-    laboratin1 = models.CharField(max_length=100)
-    laboratin2 = models.CharField(max_length=100)
+    APP_ELEC = models.CharField(max_length=100)
+    APP_MECA = models.CharField(max_length=100)
+    Laboratin1 = models.CharField(max_length=100)
+    Laboratin2 = models.CharField(max_length=100)
 
     # Metadata
     created_by = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='created_shifts')
@@ -87,12 +95,23 @@ class Shift(models.Model):
         ordering = ['date', 'shift_number']
 
 
+# class CROData(models.Model):
+#     CRO1 = models.TextField(primary_key=True)
+#     # CRO2 = models.TextField(primary_key=True)
+# class PatrollerData(models.Model):
+#     patroller = models.TextField(primary_key=True)
+
+# class CDQData(models.Model):
+#     CDQ = models.TextField(primary_key=True)
+
 class Equipement(models.Model):
     # BROYEUR_CHOICES = [
     #     ('BROYEUR-1', 'Broyeur 1'),
     #     ('BROYEUR-4', 'Broyeur 4'),
     #     ('BROYEUR-5', 'Broyeur 5'),
     # ]
+    # shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='Mill_productiont')
+
     equipement_id = models.IntegerField( primary_key=True)
     # port_id = models.AutoField(max_length=10, primary_key=True)
     BDP = models.IntegerField()
