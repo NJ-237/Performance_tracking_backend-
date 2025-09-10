@@ -1,45 +1,32 @@
-from django.urls import path , include
 from . import views
-from rest_framework.routers import DefaultRouter
-from .views import ShiftViewSet, Dryer_productionViewSet, Mill_productionViewSet, EquipementViewSet, ExpeditionDataViewSet
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+from rest_framework import routers
+from django.urls import path, include
 
-from .views import CROListAPIView, LoginAPIView, RoleList
+# Routers provide an easy way of automatically determining the URL conf.
+#For URL config with viewset 
+router = routers.DefaultRouter()
 
-# from rest_framework.authtoken import views
-from .views import CustomAuthToken
-from .views import UserlistsViewSet ,UserViewSet
+router.register(r'register',views.UserViewSet,basename='user_reg')
+router.register(r'shifts',views.ShiftViewSet,basename='shift_list')
+router.register(r'expedition',views.ExpeditionDataViewSet,basename='expedition_list')
+router.register(r'mill',views.Mill_productionViewSet,basename='mill_list')
+router.register(r'dryer',views.Dryer_productionViewSet,basename='dryer_list')
+router.register(r'equipement',views.EquipementViewSet,basename='equipment_list')
 
 
-router = DefaultRouter()
-# router.register(r'Dryer_production', Dryer_productionViewSet, basename='Dryer_production')
-# router.register(r'Mill_production', Mill_productionViewSet, basename='Mill_production')
-# router.register(r'Equipement', EquipementViewSet, basename=' Equipement')
-# router.register(r'expedition-data', ExpeditionDataViewSet, basename='expedition-data')
-# router.register(r'users', UserViewSet, basename='users') # <-- Add the UserViewSet to this router
-# router.register(r'userlist', UserlistsViewSet, basename='userlist') # <-- Add the Userlist to this router
-
+#For URL Configurations with Class-Based API View 
 urlpatterns = [
-    # path('register/', views.register_user),
-    # path('login/', views.login_user),
- 
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls')),
-    # path('api-token-auth/', views.obtain_auth_token),
-
-    # path('api-token-auth/', CustomAuthToken.as_view())
-    # path('login/', CustomAuthToken.as_view(), name='login'),
-
-     # API for getting the list of CROs for the dropdown
-    path('cros/', CROListAPIView.as_view(), name='cro-list'),
-     # API for user login
-    path('login/', LoginAPIView.as_view(), name='login'),
-
-    # # path('userlist/', include('UserlistsViewSet.urls'), name='userlist'),
-    # path('userlist/', views.UserlistsViewSet.as_view(), name='userlist'),
-    path('shift/', views.ShiftViewSet.as_view, name='shift-list'),
-    path('role_drop/', RoleList.as_view(), name='role_drop'),
-    path('register/', UserViewSet.as_view, name='user_reg'),
-
-]
+    path("login/", views.LoginAPIView.as_view(),name='login'),
+    path("role_drop/", views.RoleList.as_view(),name='role_drop'),
+    path("token_auth/", views.CustomAuthToken.as_view(),name='custom_token'),
+    path("token/refresh", TokenRefreshView.as_view(),name='token_refresh'),
+    path("profile/<pk>", views.ProfileGenericAPIView.as_view(),name='profile'),
+    path("logout/", views.LogoutView.as_view(),name='logout'),
+    path("", include(router.urls)),
+]   
 
 

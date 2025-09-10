@@ -95,14 +95,7 @@ class Shift(models.Model):
         ordering = ['date', 'shift_number']
 
 
-# class CROData(models.Model):
-#     CRO1 = models.TextField(primary_key=True)
-#     # CRO2 = models.TextField(primary_key=True)
-# class PatrollerData(models.Model):
-#     patroller = models.TextField(primary_key=True)
 
-# class CDQData(models.Model):
-#     CDQ = models.TextField(primary_key=True)
 
 class Equipement(models.Model):
     # BROYEUR_CHOICES = [
@@ -163,10 +156,6 @@ class Mill_production(models.Model):
     ])
     
 
-# class SecheurData(models.Model):
-#     # secheur_id = models.AutoField(max_length=10, primary_key=True)
-#     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='secheur_data')
-    
   
 class Port_production(models.Model):
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='Port_production')

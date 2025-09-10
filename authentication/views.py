@@ -1,16 +1,16 @@
 from django.shortcuts import render, redirect
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import action
 # from django.contrib.auth import login
-from .serializers import RegisterSerializer                       
-from rest_framework import viewsets, permissions, status, generics
+from .serializers import UserSerializer,ProfileSerializer, UserLoginSerializer                   
+from rest_framework import viewsets, permissions, status
 from .models import Shift, Dryer_production, Equipement, Mill_production, ExpeditionData
 from .serializers import ShiftSerializer, Dryer_productionSerializer, Mill_productionSerializer, EquipementSerializer, ExpeditionDataSerializer
 #new
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate
 from .models import Profile
-from .serializers import ProfileSerializer, UserLoginSerializer
-
+# Import the correct JWT views
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -22,47 +22,31 @@ from rest_framework.renderers import JSONRenderer,TemplateHTMLRenderer
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth.models import User  #new 
 from rest_framework import serializers, viewsets # new
-import django_filters.rest_framework
-
-
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.contrib.auth import logout
 
 
 
 class RoleList(GenericAPIView):
     queryset = Profile.objects.all()
-    # profileset=queryset.user.all()
-    # serializer_class = ProfileSerializer
-    # lookup_field = 'username'
-    # lookup_url_kwarg = None
 
     def get(self, request, *args, **kwargs):
         # print(self.profileset)
         croqueryset = self.queryset.filter(role="CRO").values('user__id', 'user__username') # Get queryset
         patrollerqueryset = self.queryset.filter(role="Patroller").values('user__id', 'user__username') # Get queryset
         cdqqueryset=self.queryset.filter(role="CDQ").values('user__id', 'user__username') # Get queryset
-        # serializer = self.get_serializer(queryset, many=True)  # Serialize queryset
-        # print(serializer.data)
-        # pat_serial = self.get_serializer(patrollerqueryset, many=True)  # Serialize queryset
-        # cdq_serial = self.get_serializer(cdqqueryset, many=True)  # Serialize queryset
-
-        # return Response({"CRO":serializer.data,"Patroller":pat_serial.data,"CDQ":cdq_serial.data})
+       
         return Response({
             "CRO": croqueryset,
             "Patroller": patrollerqueryset,
             "CDQ": cdqqueryset
         })
 
-
-
-User = get_user_model()
-
-# Serializers define the API representation.
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = "__all__"
-
-
+class MyTokenObtainPairView(TokenObtainPairView):
+    # This view is already configured to handle JWT token creation.
+    # No need for a custom class unless you need to override its behavior.
+    pass
 
 class LoginAPIView(APIView):
     """
@@ -103,22 +87,6 @@ class LoginAPIView(APIView):
             )
 
 
-class CROListAPIView(generics.ListAPIView):
-    """
-    API view to list all registered CROs.
-    Only allows authenticated users to access this list.
-    """
-    serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        """
-        Filter the queryset to return only profiles with the 'cro' position.
-        The filter is case-insensitive.
-        """
-        return Profile.objects.filter(Position__iexact='cro')
-    
-
 class  ProfileGenericAPIView(GenericAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
@@ -140,41 +108,10 @@ class  ProfileGenericAPIView(GenericAPIView):
 
 
 
-
-
-# # ViewSets define the view behavior.
-# class UserViewSet(viewsets.ModelViewSet):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-# @api_view(['POST'])
-# def register_user(request):
-#     serializer = RegisterSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# @api_view(['POST'])
-# def login_user(request):
-#     serializer = LoginSerializer(data=request.data)
-#     print(request.data, serializer.is_valid())
-#     if serializer.is_valid():
-#         user = serializer.validated_data
-#         print("blocked")
-#         login(request, user)
-#         return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
-#     if not serializer.is_valid():
-#         print(serializer.errors)
-#         # return Response(serializer.errors, status=400)
-
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomAuthToken(ObtainAuthToken):
@@ -201,16 +138,16 @@ class UserlistsViewSet(viewsets.ModelViewSet):
     def get(self, request,format=None):
         pass
 
-#Endpoitns for dropdowns : 
-# from .filter import Rolefilter
-# class  RolefilterViewSet(viewsets.ModelViewSet):
-      
-#     queryset = Profile.objects.all()
-#     serializer_class = ProfileSerializer
-#     filterset_class =  Rolefilter
+# Endpoints for the LogOut 
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
 
-
-# views.py for the input values from the ReportSide 
+    def post(self, request):
+        # Delete the user's token
+        request.user.auth_token.delete()
+        
+        # Return a success response
+        return Response(status=status.HTTP_200_OK)
 
 class ShiftViewSet(viewsets.ModelViewSet):
 
