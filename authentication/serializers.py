@@ -92,6 +92,13 @@ class ExpeditionDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExpeditionData
         fields = '__all__'
+        # Date and shift
+    # date = serializers.DateField()
+    # shift = serializers.IntegerField()
+    
+    # def create(self, validated_data):
+        # Create and return a new Expedition instance
+        # return Expedition.objects.create(**validated_data)
 
 class EquipementSerializer(serializers.ModelSerializer):
     class Meta:

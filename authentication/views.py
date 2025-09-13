@@ -158,6 +158,7 @@ class ShiftViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     def perform_create(self, serializer):
+        print(all)
         serializer.save(created_by=self.request.user)
 
     
@@ -208,3 +209,4 @@ class ExpeditionDataViewSet(viewsets.ModelViewSet):
     queryset = ExpeditionData.objects.all()
     serializer_class = ExpeditionDataSerializer
     permission_classes = [permissions.IsAuthenticated]
+      
