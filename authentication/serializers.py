@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .models import Profile
-from .models import Shift, Dryer_production, Mill_production, Equipement, ExpeditionData
+from .models import Shift, Dryer_production, Mill_production, Equipement, ExpeditionData, Port_production
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.response import Response
@@ -83,10 +83,10 @@ class Mill_productionSerializer(serializers.ModelSerializer):
         model = Mill_production
         fields = '__all__'
 
-# class PortDataSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = PortData
-#         fields = '__all__'
+class Port_productionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Port_production
+        fields = '__all__'
 
 class ExpeditionDataSerializer(serializers.ModelSerializer):
     class Meta:
@@ -99,8 +99,19 @@ class ExpeditionDataSerializer(serializers.ModelSerializer):
     # def create(self, validated_data):
         # Create and return a new Expedition instance
         # return Expedition.objects.create(**validated_data)
+        
 
 class EquipementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipement
         fields = '__all__'
+
+
+
+
+
+
+
+
+
+        

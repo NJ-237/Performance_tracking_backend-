@@ -13,9 +13,10 @@ router = routers.DefaultRouter()
 router.register(r'register',views.UserViewSet,basename='user_reg')
 router.register(r'shifts',views.ShiftViewSet,basename='shift_list')
 router.register(r'expedition',views.ExpeditionDataViewSet,basename='expedition_list')
-router.register(r'mill',views.Mill_productionViewSet,basename='mill_list')
+# router.register(r'mill',views.Mill_productionViewSet,basename='mill_list')
 router.register(r'dryer',views.Dryer_productionViewSet,basename='dryer_list')
-router.register(r'equipement',views.EquipementViewSet,basename='equipment_list')
+# router.register(r'port',views.Port_productionViewSet,basename='port_list')
+# router.register(r'equipement',views.EquipementViewSet,basename='equipment_list')
 
 
 #For URL Configurations with Class-Based API View 
@@ -27,6 +28,4 @@ urlpatterns = [
     path("profile/<pk>", views.ProfileGenericAPIView.as_view(),name='profile'),
     path("logout/", views.LogoutView.as_view(),name='logout'),
     path("", include(router.urls)),
-]   
-
-
+]

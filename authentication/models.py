@@ -159,36 +159,56 @@ class Mill_production(models.Model):
   
 class Port_production(models.Model):
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='Port_production')
-  
+    commentaires = models.TextField(blank=True)
+    debut = models.DateTimeField(null=True, blank=True)
+    fin = models.DateTimeField(null=True, blank=True)
+    duree = models.DurationField(null=True, blank=True)
+    compteur_debut = models.FloatField(null=True, blank=True)
+    compteur_fin = models.FloatField(null=True, blank=True)
+    dechargement = models.FloatField(null=True, blank=True)
+    ensilage_silo = models.JSONField(default=dict)
+    situation_entree_quart = models.CharField(max_length=20, null=True, blank=True, choices=[
+        ('En Marche', 'En Marche'),
+        ('En Arret', 'En Arret')
+    ])
 
 
 class Dryer_production(models.Model):
+    shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='Dryer_production')
        # Matieres premieres pour secheur 
     PZ_humide_debut = models.FloatField()
     PZ_humide_fin = models.FloatField()
     PZ_humide_Difference = models.FloatField()
-    PZ_humide_Production = models.FloatField()
+    # PZ_humide_Production = models.FloatField()
     bande_melange_debut = models.FloatField()
     bande_melange_fin = models.FloatField()
     bande_melange_Difference = models.FloatField()
-    bande_melange_Production = models.FloatField()
+    # bande_melange_Production = models.FloatField()
     compteur_horaire_debut = models.FloatField()
     compteur_horaire_fin = models.FloatField()
     compteur_horaire_Difference = models.FloatField()
-    compteur_horaire_Production = models.FloatField()
-    production = models.CharField(max_length=100, blank=True)
+    # compteur_horaire_Production = models.FloatField()
+    quality = models.CharField(max_length=100, blank=True)
+    production = models.FloatField(max_length=100, blank=True)
     commentaires = models.TextField(blank=True)
-    humidites_entree = models.TextField(blank=True)
-    humidites_sortie = models.TextField(blank=True)
+    humidites_entree = models.FloatField(blank=True)
+    humidites_sortie = models.FloatField(blank=True)
 
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='Dryer_production')
     # broyeur_type = models.CharField(max_length=10, choices=BROYEUR_CHOICES)
     
     # Godets data
     nbre_godets = models.IntegerField()
     poids_godets = models.FloatField()
     debit = models.FloatField()
+    
 
+    situation_entree_quart = models.CharField(max_length=20, null=True, blank=True, choices=[
+        ('En Marche', 'En Marche'),
+        ('En Arret', 'En Arret')
+    ])
+      # Extraction silo data (as JSON)
+    # extraction_silo = models.JSONField(default=dict)
+    ensilage_silo = models.TextField(default=dict)
 
 
 # class PortData(models.Model):
@@ -250,5 +270,3 @@ class Feedback(models.Model):
     feedback_type = models.CharField(max_length=100)
     comments = models.TextField()
     date = models.DateField()
-
-

@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect
 from rest_framework.response import Response
 from rest_framework.decorators import action
 # from django.contrib.auth import login
-from .serializers import UserSerializer,ProfileSerializer, UserLoginSerializer                   
+from .serializers import UserSerializer,ProfileSerializer, UserLoginSerializer, Port_productionSerializer                   
 from rest_framework import viewsets, permissions, status
-from .models import Shift, Dryer_production, Equipement, Mill_production, ExpeditionData
+from .models import Shift, Dryer_production, Equipement, Mill_production, ExpeditionData, Port_production
 from .serializers import ShiftSerializer, Dryer_productionSerializer, Mill_productionSerializer, EquipementSerializer, ExpeditionDataSerializer
 #new
 from django.contrib.auth import authenticate
@@ -67,7 +67,7 @@ class LoginAPIView(APIView):
             # Check if user has a related Profile
             try:
                 profile = Profile.objects.get(user=user)
-                role = profile.Position.lower()
+                role = profile.role.lower()
             except Profile.DoesNotExist:
                 # Handle case where user has no profile
                 role = 'unknown' 
@@ -155,36 +155,35 @@ class ShiftViewSet(viewsets.ModelViewSet):
          
     queryset = Shift.objects.all()
     serializer_class = ShiftSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     
     def perform_create(self, serializer):
-        print(all)
-        serializer.save(created_by=self.request.user)
+        print('all')
+        serializer.save(created_by=self.request.user.profile)
 
     
-    @action(detail=True, methods=['get'])
-    def Mill_production(self, request, pk=None):
-        shift = self.get_object()
-        Mill_production = shift.Mill_production.all()
-        serializer = Mill_productionSerializer(Mill_production, many=True)
-        return Response(serializer.data)
+# @action(detail=True, methods=['get'])
+# def Mill_production(self, request, pk=None):
+#         shift = self.get_object()
+#         Mill_production = shift.Mill_production.all()
+#         serializer = Mill_productionSerializer(Mill_production, many=True)
+#         return Response(serializer.data)
+
+# @action(detail=True, methods=['get'])
+# def Equipement(self, request, pk=None):
+#         shift = self.get_object()
+#         Equipement = shift.Equipement.all()
+#         serializer = EquipementSerializer(Equipement, many=True)
+# #         return Response(serializer.data)
+# @action(detail=True, methods=['get'])
+# def Dryer_data(self, request, pk=None):
+#         shift = self.get_object()
+#         Dryer_data = shift.Dryer_data.all()
+#         serializer = Dryer_productionSerializer(Dryer_data, many=True)
+#         return Response(serializer.data)
     
-    @action(detail=True, methods=['get'])
-    def Equipement(self, request, pk=None):
-        shift = self.get_object()
-        Equipement = shift.Equipement.all()
-        serializer = EquipementSerializer(Equipement, many=True)
-        return Response(serializer.data)
-    
-    @action(detail=True, methods=['get'])
-    def Dryer_production(self, request, pk=None):
-        shift = self.get_object()
-        Dryer_production = shift.Dryer_production.all()
-        serializer = Dryer_productionSerializer(Dryer_production, many=True)
-        return Response(serializer.data)
-    
-    @action(detail=True, methods=['get'])
-    def expedition_data(self, request, pk=None):
+@action(detail=True, methods=['get'])
+def expedition_data(self, request, pk=None):
         shift = self.get_object()
         expedition_data = shift.expedition_data.all()
         serializer = ExpeditionDataSerializer(expedition_data, many=True)
@@ -193,20 +192,37 @@ class ShiftViewSet(viewsets.ModelViewSet):
 class Dryer_productionViewSet(viewsets.ModelViewSet):
     queryset = Dryer_production.objects.all()
     serializer_class = Dryer_productionSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
-class EquipementViewSet(viewsets.ModelViewSet):
-    queryset = Equipement.objects.all()
-    serializer_class = EquipementSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    def perform_create(self, serializer):
+        print('all', self.request)
+        print(self.get_object, self.request.data)
+        serializer.save()
+        # serializer.save(created_by=self.request.user.profile)
+#     permission_classes = [permissions.IsAuthenticated]
 
-class Mill_productionViewSet(viewsets.ModelViewSet):
-    queryset = Mill_production.objects.all()
-    serializer_class = Mill_productionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+# class EquipementViewSet(viewsets.ModelViewSet):
+#     queryset = Equipement.objects.all()
+#     serializer_class = EquipementSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+# class Mill_productionViewSet(viewsets.ModelViewSet):
+#     queryset = Mill_production.objects.all()
+#     serializer_class = Mill_productionSerializer
+#     permission_classes = [permissions.IsAuthenticated]
 
 class ExpeditionDataViewSet(viewsets.ModelViewSet):
     queryset = ExpeditionData.objects.all()
     serializer_class = ExpeditionDataSerializer
-    permission_classes = [permissions.IsAuthenticated]
-      
+#     permission_classes = [permissions.IsAuthenticated]
+    # def perform_create(self, serializer):
+#         # We access the authenticated user's related Profile object.
+#         # This assumes your User model has a one-to-one relationship with a Profile model
+#         # defined as a related name like `user.profile`.
+        # serializer.save(created_by=self.request.user.profile)
+    
+
+# class Port_productionViewSet(viewsets.ModelViewSet):
+#     queryset = Port_production.objects.all()
+#     serializer_class = Port_productionSerializer
+#     permission_classes = [permissions.IsAuthenticated]
