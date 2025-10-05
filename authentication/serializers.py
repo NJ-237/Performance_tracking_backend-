@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .models import Profile
-from .models import Shift, Dryer_production, Mill_production, Equipement, ExpeditionData, Port_production
+from .models import Shift, Dryer_production, Mill_production, Equipement, ExpeditionData, Port_production, Feedback, Performance
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.response import Response
@@ -74,36 +74,47 @@ class ShiftSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_by', 'created_at')
 
 class Dryer_productionSerializer(serializers.ModelSerializer):
+     # This is the key change. We explicitly get the shift_number from the related Shift object.
+    shift_number = serializers.CharField(source='shift.shift_number', read_only=True)
     class Meta:
         model = Dryer_production
         fields = '__all__'
 
 class Mill_productionSerializer(serializers.ModelSerializer):
+     # This is the key change. We explicitly get the shift_number from the related Shift object.
+    shift_number = serializers.CharField(source='shift.shift_number', read_only=True)
     class Meta:
         model = Mill_production
         fields = '__all__'
 
 class Port_productionSerializer(serializers.ModelSerializer):
+     # This is the key change. We explicitly get the shift_number from the related Shift object.
+    shift_number = serializers.CharField(source='shift.shift_number', read_only=True)
     class Meta:
         model = Port_production
         fields = '__all__'
 
 class ExpeditionDataSerializer(serializers.ModelSerializer):
+     # This is the key change. We explicitly get the shift_number from the related Shift object.
+    shift_number = serializers.CharField(source='shift.shift_number', read_only=True)
     class Meta:
         model = ExpeditionData
         fields = '__all__'
-        # Date and shift
-    # date = serializers.DateField()
-    # shift = serializers.IntegerField()
-    
-    # def create(self, validated_data):
-        # Create and return a new Expedition instance
-        # return Expedition.objects.create(**validated_data)
-        
+     
 
 class EquipementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipement
+        fields = '__all__'
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = '__all__'
+
+class PerformanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Performance
         fields = '__all__'
 
 

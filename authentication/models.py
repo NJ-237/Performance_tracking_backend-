@@ -98,11 +98,11 @@ class Shift(models.Model):
 
 
 class Equipement(models.Model):
-    # BROYEUR_CHOICES = [
-    #     ('BROYEUR-1', 'Broyeur 1'),
-    #     ('BROYEUR-4', 'Broyeur 4'),
-    #     ('BROYEUR-5', 'Broyeur 5'),
-    # ]
+    BROYEUR_CHOICES = [
+        ('BROYEUR-1', 'Broyeur 1'),
+        ('BROYEUR-4', 'Broyeur 4'),
+        ('BROYEUR-5', 'Broyeur 5'),
+    ]
     # shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='Mill_productiont')
 
     equipement_id = models.IntegerField( primary_key=True)
@@ -123,37 +123,38 @@ class Ciment_type(models.Model):
    
 class Mill_production(models.Model):
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='Mill_productiont')
-    equipement_id = models.ForeignKey(Equipement, on_delete=models.CASCADE, related_name='Mill_productiont')
+    # equipement_id = models.ForeignKey(Equipement, on_delete=models.CASCADE, related_name='Mill_productiont')
     production = models.IntegerField()
-    ciment_id = models.ForeignKey(Ciment_type, on_delete=models.CASCADE, related_name='Mill_productiont')
-    
+    # ciment_id = models.ForeignKey(Ciment_type, on_delete=models.CASCADE, related_name='Mill_productiont')
+    user = models.ForeignKey(Profile, null=True, blank=True, on_delete=models.CASCADE)
+
       # Common fields for all broyeurs
     clinker_debut = models.FloatField()
     clinker_fin = models.FloatField()
+    clinker_Difference = models.FloatField(null=True, blank=True)
     pouzzolane_debut = models.FloatField()
     pouzzolane_fin = models.FloatField()
+    pouzzolane_Difference = models.FloatField(null=True, blank=True)
     gypse_debut = models.FloatField()
     gypse_fin = models.FloatField()
+    gypse_Difference = models.FloatField(null=True, blank=True)
     fine_debut = models.FloatField()
     fine_fin = models.FloatField()
+    fine_Difference = models.FloatField(null=True, blank=True)
     compteur_horaire_debut = models.FloatField()
     compteur_horaire_fin = models.FloatField()
-    compteur_horaire_Production = models.FloatField()
-    compteur_horaire_Production = models.FloatField()
+    compteur_horaire_Difference = models.FloatField(null=True, blank=True)
     SO3 = models.FloatField()
     Blaines = models.FloatField()
-    # Production = models.FloatField() total value of production
     commentaires = models.TextField(blank=True)
-
-     # Extraction silo data (as JSON)
-    extraction_silo = models.JSONField(default=dict)
-    ensilage_silo = models.JSONField(default=dict)
-    
+    ensilage_silo = models.CharField(default=dict)
     # Situation
-    situation_entree_quart = models.CharField(max_length=20, choices=[
-        ('En Marche', 'En Marche'),
-        ('En Arret', 'En Arret')
-    ])
+    extraction_silo = models.CharField(default=dict)
+    no_godets_receptions = models.FloatField(null=True, blank=True)
+    arret_par_incident = models.FloatField(null=True, blank=True)
+    HNA = models.FloatField(null=True, blank=True)
+    Ecart_type = models.FloatField(null=True, blank=True)
+    temp = models.FloatField(null=True, blank=True)
     
 
   
@@ -166,7 +167,7 @@ class Port_production(models.Model):
     compteur_debut = models.FloatField(null=True, blank=True)
     compteur_fin = models.FloatField(null=True, blank=True)
     dechargement = models.FloatField(null=True, blank=True)
-    ensilage_silo = models.JSONField(default=dict)
+    ensilage_silo = models.CharField(default=dict)
     situation_entree_quart = models.CharField(max_length=20, null=True, blank=True, choices=[
         ('En Marche', 'En Marche'),
         ('En Arret', 'En Arret')
@@ -206,23 +207,8 @@ class Dryer_production(models.Model):
         ('En Marche', 'En Marche'),
         ('En Arret', 'En Arret')
     ])
-      # Extraction silo data (as JSON)
-    # extraction_silo = models.JSONField(default=dict)
-    ensilage_silo = models.TextField(default=dict)
+    ensilage_silo = models.CharField(default=dict)
 
-
-# class PortData(models.Model):
-    # port_id = models.AutoField(max_length=10, primary_key=True)
-    # shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='port_data')
-    
-    # Dechargement data
-    # commentaires = models.TextField(blank=True)
-    # debut = models.DateTimeField()
-    # fin = models.DateTimeField()
-    # duree = models.DurationField()
-    # compteur_debut = models.FloatField()
-    # compteur_fin = models.FloatField()
-    # dechargement = models.FloatField()
 
 class ExpeditionData(models.Model):
     # expedition_id = models.AutoField(max_length=10, primary_key=True)
@@ -265,8 +251,18 @@ class ExpeditionData(models.Model):
 
 
 class Feedback(models.Model):
-    Employee_id = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='feedbacks')
-    submitted_by = models.CharField(max_length=100)
-    feedback_type = models.CharField(max_length=100)
-    comments = models.TextField()
-    date = models.DateField()
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='feedbacks')
+    submitted_by = models.CharField(max_length=100, null=True, blank=True)
+    type = models.CharField(max_length=100, null=True, blank=True)
+    comments = models.TextField(null=True, blank=True)
+    operatorType = models.TextField(null=True, blank=True)
+    ratings = models.IntegerField(null=True, blank=True)
+
+
+
+class Performance(models.Model):
+    shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='Performance')
+    stability = models.IntegerField(null=True, blank=True)
+    optimization = models.IntegerField(null=True, blank=True)
+    environment = models.IntegerField(null=True, blank=True)
+    production = models.IntegerField(null=True, blank=True)

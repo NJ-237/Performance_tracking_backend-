@@ -67,10 +67,15 @@ REST_FRAMEWORK = {
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        #  'django_filters.rest_framework.DjangoFilterBackend',
+       
+      ],
 
-    ]
+      'DEFAULT_FILTER_BACKENDS': [
+          'django_filters.rest_framework.DjangoFilterBackend'
+          ]
 }
+
+
 # CORS_ORIGIN_ALLOW_ALL = True
 CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']
 MIDDLEWARE = [

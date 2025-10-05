@@ -7,15 +7,16 @@ from rest_framework import routers
 from django.urls import path, include
 
 # Routers provide an easy way of automatically determining the URL conf.
-#For URL config with viewset 
+#For URL config with viewset funtion based view 
 router = routers.DefaultRouter()
 
 router.register(r'register',views.UserViewSet,basename='user_reg')
 router.register(r'shifts',views.ShiftViewSet,basename='shift_list')
 router.register(r'expedition',views.ExpeditionDataViewSet,basename='expedition_list')
-# router.register(r'mill',views.Mill_productionViewSet,basename='mill_list')
+router.register(r'mill',views.Mill_productionViewSet,basename='mill_list')
 router.register(r'dryer',views.Dryer_productionViewSet,basename='dryer_list')
-# router.register(r'port',views.Port_productionViewSet,basename='port_list')
+router.register(r'port',views.Port_productionViewSet,basename='port_list')
+# router.register(r'performance',views.PerformanceViewSet,basename='performance_list')
 # router.register(r'equipement',views.EquipementViewSet,basename='equipment_list')
 
 
@@ -23,9 +24,11 @@ router.register(r'dryer',views.Dryer_productionViewSet,basename='dryer_list')
 urlpatterns = [
     path("login/", views.LoginAPIView.as_view(),name='login'),
     path("role_drop/", views.RoleList.as_view(),name='role_drop'),
+    path("date_filter/", views.ProductionKPIView.as_view(), name='date_filter'),
     path("token_auth/", views.CustomAuthToken.as_view(),name='custom_token'),
     path("token/refresh", TokenRefreshView.as_view(),name='token_refresh'),
     path("profile/<pk>", views.ProfileGenericAPIView.as_view(),name='profile'),
+    # path('api/operator/performance/<int:operator_id>/', views.OperatorPerformanceHistoryView.as_view(), name='operator-performance'),
     path("logout/", views.LogoutView.as_view(),name='logout'),
     path("", include(router.urls)),
 ]
